@@ -1,0 +1,27 @@
+{
+  "name": "global-cargo-tracker",
+  "version": "1.0.0",
+  "description": "Real-time cargo tracking dashboard with live map updates using WebSockets",
+  "main": "main.js",
+  "scripts": {
+    "start": "node main.js",
+    "dev": "nodemon main.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "socket.io": "^4.7.2"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  },
+  "keywords": [
+    "cargo",
+    "tracking",
+    "realtime",
+    "websockets",
+    "leaflet",
+    "dashboard"
+  ],
+  "author": "",
+  "license": "MIT"
+}
