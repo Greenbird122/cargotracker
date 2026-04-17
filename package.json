@@ -1,33 +1,25 @@
 {
-  "name": "global-cargo-tracker",
+  "name": "cargotracker",
   "version": "1.0.0",
-  "description": "Real-time cargo tracking dashboard with live map updates using WebSockets",
-  "main": "main.js",
+  "description": "Tulia Tag cargo tracking application",
+  "main": "server.js",
   "scripts": {
-    "start": "node main.js",
-    "dev": "nodemon main.js"
+    "start": "node server.js",
+    "dev": "nodemon server.js"
   },
-  "dependencies": {
-    "express": "^4.18.2",
-    "socket.io": "^4.7.2"
-  },
+  "keywords": ["tracking", "gps", "cargo", "supabase"],
+  "author": "Greenbird122",
+  "license": "ISC",
   "dependencies": {
     "express": "^4.18.2",
     "cors": "^2.8.5",
     "@supabase/supabase-js": "^2.39.0",
-    "dotenv": "^16.3.1"
+    "dotenv": "^16.0.3"
   },
   "devDependencies": {
     "nodemon": "^3.0.1"
   },
-  "keywords": [
-    "cargo",
-    "tracking",
-    "realtime",
-    "websockets",
-    "leaflet",
-    "dashboard"
-  ],
-  "author": "",
-  "license": "MIT"
+  "engines": {
+    "node": ">=18.0.0"
+  }
 }
