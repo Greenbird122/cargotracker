@@ -1,69 +1,29 @@
-// server.js
 const express = require('express');
-const cors = require('cors');
-const { createClient } = require('@supabase/supabase-js');
-require('dotenv').config();
-
+const path = require('path');
 const app = express();
-app.use(cors());
+const PORT = process.env.PORT || 3000;
+
+// Serve static files from the current directory
+app.use(express.static(__dirname));
+
+// Parse JSON bodies
 app.use(express.json());
 
-// Initialize Supabase with service role (bypasses RLS)
-const supabase = createClient(
-  process.env.SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_KEY
-);
-
-// Store latest location in memory for quick GET (optional)
-let latestLocation = null;
-
-// Endpoint for tracker to POST location
-app.post('/api/location', async (req, res) => {
-  const { device_id, lat, lng, battery } = req.body;
-  
-  // Validate required fields
-  if (!device_id || lat === undefined || lng === undefined) {
-    return res.status(400).json({ error: 'Missing device_id, lat, or lng' });
-  }
-
-  latestLocation = {
-    device_id,
-    lat,
-    lng,
-    battery: battery || null,
-    timestamp: new Date().toISOString()
-  };
-
-  console.log(`📍 Tracker ${device_id}: ${lat}, ${lng}`);
-
-  // Forward to Supabase
-  const { error } = await supabase
-    .from('devices')
-    .update({
-      lat,
-      lng,
-      battery: battery || null,
-      last_updated: new Date()
-    })
-    .eq('id', device_id);
-
-  if (error) {
-    console.error('Supabase update error:', error);
-    // Still return ok to tracker – we logged the error
-  }
-
-  res.json({ status: 'ok' });
+// Main route - serve form.html
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'form.html'));
 });
 
-// Optional: GET latest location for debugging
-app.get('/api/location', (req, res) => {
-  res.json(latestLocation || { message: 'No location received yet' });
+// Map route - also serve form.html
+app.get('/map', (req, res) => {
+  res.sendFile(path.join(__dirname, 'form.html'));
 });
 
-// Health check
-app.get('/health', (req, res) => res.send('OK'));
+app.post('/submit', (req, res) => {
+  console.log('Form data received:', req.body);
+  res.json({ message: 'Data received successfully' });
+});
 
-const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-  console.log(`🚀 Tracker gateway running on port ${PORT}`);
+  console.log(`Server running on port ${PORT}`);
 });
