@@ -19,9 +19,10 @@ app.get('/', (req, res) => {
     });
 });
 
-// GET ROUTE for ESP32
+// GET ROUTE for ESP32 via Pipedream
 app.get('/api/location', async (req, res) => {
-    const { device_id, lat, lng, battery } = req.query;
+    // FIX: Changed 'battery' to 'status' to match the Pipedream payload
+    const { device_id, lat, lng, status } = req.query;
 
     if (!device_id || !lat || !lng) {
         return res.status(400).json({ error: 'Missing device_id, lat, or lng' });
@@ -30,14 +31,14 @@ app.get('/api/location', async (req, res) => {
     const latitude = parseFloat(lat);
     const longitude = parseFloat(lng);
 
-    // .upsert creates the record if it is missing!
+    // .upsert creates or updates the device record based on its ID!
     const { data, error } = await supabase
         .from('devices')
         .upsert({ 
             id: device_id, 
             lat: latitude, 
             lng: longitude, 
-            battery: battery ? parseInt(battery) : null,
+            status: status || 'UNKNOWN', // Captures 'SEARCHING' or 'GPS_FIX'
             last_updated: new Date() 
         }, { onConflict: 'id' })
         .select();
@@ -47,7 +48,7 @@ app.get('/api/location', async (req, res) => {
         return res.status(500).json({ error: error.message });
     }
 
-    console.log(`✅ Success: ${device_id} is now in the database.`);
+    console.log(`✅ Success: ${device_id} updated. Lat: ${latitude}, Lng: ${longitude}, Status: ${status}`);
     
     latestLocation = { device_id, lat: latitude, lng: longitude, timestamp: new Date() };
     res.json({ status: 'ok', database_record: data });
